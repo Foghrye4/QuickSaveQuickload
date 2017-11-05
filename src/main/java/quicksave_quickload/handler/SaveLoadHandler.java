@@ -98,6 +98,7 @@ public class SaveLoadHandler {
 				cube.setStorage(new ExtendedBlockStorage(Coords.cubeToMinBlock(cpos.getY()),
 						cworld.getProvider().hasSkyLight()));
 			cube.getStorage().getData().setDataFromNBT(dataEntry.bsdata, dataEntry.bsa, null);
+			cube.getStorage().recalculateRefCounts();
 			cube.markDirty();
 			cubesToUpdate.add(cube);
 		}

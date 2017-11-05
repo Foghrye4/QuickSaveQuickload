@@ -20,7 +20,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk.EnumCreateEntityType;
-import quicksave_quickload.QuickSaveQuickLoadMod;
 
 public class CubeSaveDataEntry {
 
@@ -32,7 +31,7 @@ public class CubeSaveDataEntry {
 			tileEntityData.add(te.writeToNBT(new NBTTagCompound()));
 		}
 		entityData = new NBTTagCompound();
-		cube.getEntityContainer().writeToNbt(entityData, "entityData", e -> {QuickSaveQuickLoadMod.log.info("saving "+e);});
+		cube.getEntityContainer().writeToNbt(entityData, "entityData", e -> {});
 	}
 
 	public void load(Cube cube, Set<UUID> loadedEntities) {
@@ -53,10 +52,8 @@ public class CubeSaveDataEntry {
 			Entity entity = world.getEntityFromUuid(uid);
 			if (entity != null) {
 				entity.readFromNBT(nbtEntity);
-				QuickSaveQuickLoadMod.log.info("reading "+entity);
 			} else {
 				entity = EntityList.createEntityFromNBT(nbtEntity, (World) world);
-				QuickSaveQuickLoadMod.log.info("Spawning "+entity);
 				if (entity != null)
 					world.spawnEntity(entity);
 			}

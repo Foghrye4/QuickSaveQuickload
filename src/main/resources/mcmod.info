@@ -3,7 +3,7 @@
   "modid": "quicksave_quickload",
   "name": "Quicksave-quickload",
   "description": "Quickly restore state of a game from a single checkpoint. For single- and multi-player game.",
-  "version": "0.1.1",
+  "version": "1.0.1",
   "mcversion": "1.12.2",
   "url": "",
   "updateUrl": "",

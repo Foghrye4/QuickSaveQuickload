@@ -42,7 +42,8 @@ public class CubeSaveDataEntry {
 			int z = tag.getInteger("z");
 			BlockPos pos = new BlockPos(x, y, z);
 			TileEntity te = cube.getTileEntity(pos, EnumCreateEntityType.IMMEDIATE);
-			te.readFromNBT(tag);
+			if (te != null) // When it is loaded from another world.
+				te.readFromNBT(tag);
 		}
 		NBTTagList nbtEntities = entityData.getTagList("entityData", 10);
 		for (int i = 0; i < nbtEntities.tagCount(); ++i) {

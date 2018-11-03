@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import cubicchunks.world.ICubeProvider;
-import cubicchunks.world.ICubicWorld;
-import cubicchunks.world.cube.Cube;
+import io.github.opencubicchunks.cubicchunks.core.world.cube.Cube;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minecraft.entity.Entity;
@@ -35,7 +33,7 @@ public class CubeSaveDataEntry {
 	}
 
 	public void load(Cube cube, Set<UUID> loadedEntities) {
-		WorldServer world = (WorldServer) cube.getCubicWorld();
+		WorldServer world = (WorldServer) cube.getWorld();
 		for (NBTTagCompound tag : tileEntityData) {
 			int x = tag.getInteger("x");
 			int y = tag.getInteger("y");

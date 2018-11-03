@@ -4,9 +4,11 @@ import static quicksave_quickload.QuickSaveQuickLoadMod.MODID;
 import static quicksave_quickload.QuickSaveQuickLoadMod.log;
 
 import java.io.IOException;
+import java.util.List;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -31,7 +33,7 @@ public class ServerNetworkHandler {
 	}
 
 	public enum ClientCommands {
-		LOAD_PLAYER_DATA;
+		LOAD_PLAYER_DATA, READ_ENTITY_DATA;
 	}
 
 	private MinecraftServer server;
@@ -78,6 +80,14 @@ public class ServerNetworkHandler {
 		byteBufOutputStream.writeByte(ClientCommands.LOAD_PLAYER_DATA.ordinal());
 		byteBufOutputStream.writeCompoundTag(tag);
 		channel.sendTo(new FMLProxyPacket(byteBufOutputStream, MODID), player);
+	}
+	
+	public void sendEntityInfoToPlayer(Entity cse, int[] is) {
+		ByteBuf bb = Unpooled.buffer(36);
+		PacketBuffer byteBufOutputStream = new PacketBuffer(bb);
+		byteBufOutputStream.writeByte(ClientCommands.READ_ENTITY_DATA.ordinal());
+		byteBufOutputStream.writeVarIntArray(is);
+		channel.sendTo(new FMLProxyPacket(byteBufOutputStream, MODID), (EntityPlayerMP) cse);
 	}
 
 	public void setServer(MinecraftServer serverIn) {

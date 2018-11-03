@@ -2,9 +2,10 @@ package quicksave_quickload.gui;
 
 import static quicksave_quickload.QuickSaveQuickLoadMod.network;
 
-import cubicchunks.world.ICubicWorld;
+import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorld;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
@@ -26,7 +27,15 @@ public class GuiEventHandler {
 			GuiScreen gui = event.getGui();
 			event.getButtonList().add(new GuiButton(SAVE_BUTTON_INDEX, gui.width / 2 - 100, gui.height / 4 + 144 + -16, 98, 20, I18n.format("quicksave_quickload.save")));
 			event.getButtonList().add(new GuiButton(LOAD_BUTTON_INDEX, gui.width / 2 + 2, gui.height / 4 + 144 + -16, 98, 20, I18n.format("quicksave_quickload.load")));
-
+		}
+		if (event.getGui() instanceof GuiGameOver) {
+			ICubicWorld cworld = (ICubicWorld) Minecraft.getMinecraft().world;
+			if(!cworld.isCubicWorld())
+				return;
+			GuiScreen gui = event.getGui();
+			GuiButton button = new GuiButton(LOAD_BUTTON_INDEX, gui.width / 2 - 100, gui.height / 4 + 72 - 24, I18n.format("quicksave_quickload.load"));
+			button.enabled = false;
+			event.getButtonList().add(button);
 		}
 	}
 
@@ -41,6 +50,17 @@ public class GuiEventHandler {
 					mc.setIngameFocus();
 					break;
 				case LOAD_BUTTON_INDEX :
+					((ClientNetworkHandler)network).sendPacketLoadGame();
+					mc.displayGuiScreen((GuiScreen) null);
+					mc.setIngameFocus();
+					break;
+			}
+		}
+		if(action.getGui() instanceof GuiGameOver) {
+			Minecraft mc = Minecraft.getMinecraft();
+			switch (action.getButton().id) {
+				case LOAD_BUTTON_INDEX :
+					mc.player.setPlayerSPHealth(mc.player.getMaxHealth());
 					((ClientNetworkHandler)network).sendPacketLoadGame();
 					mc.displayGuiScreen((GuiScreen) null);
 					mc.setIngameFocus();

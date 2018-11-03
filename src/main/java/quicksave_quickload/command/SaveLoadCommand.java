@@ -5,6 +5,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.TextComponentString;
 import quicksave_quickload.QuickSaveQuickLoadMod;
 import quicksave_quickload.handler.SaveLoadHandler;
 
@@ -33,6 +34,8 @@ public class SaveLoadCommand extends CommandBase {
 			QuickSaveQuickLoadMod.eventHandler.save(sender.getCommandSenderEntity());
 		else if (args[0].equalsIgnoreCase("load"))
 			QuickSaveQuickLoadMod.eventHandler.scheduleLoadOnNextTick(sender.getCommandSenderEntity());
+		else if (args[0].equalsIgnoreCase("showuid"))
+			sender.getCommandSenderEntity().sendMessage(new TextComponentString(sender.getCommandSenderEntity().getUniqueID().toString()));
 		else
 			throw new WrongUsageException(this.getUsage(sender), new Object[0]);
 	}

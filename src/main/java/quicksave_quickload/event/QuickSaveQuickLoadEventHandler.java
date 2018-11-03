@@ -1,13 +1,11 @@
 package quicksave_quickload.event;
 
-import java.util.List;
-
 import javax.annotation.Nullable;
 
-import cubicchunks.api.CubeWatchEvent;
-import cubicchunks.util.CubePos;
-import cubicchunks.world.ICubicWorld;
-import cubicchunks.world.cube.Cube;
+import io.github.opencubicchunks.cubicchunks.api.util.CubePos;
+import io.github.opencubicchunks.cubicchunks.api.world.CubeWatchEvent;
+import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorld;
+import io.github.opencubicchunks.cubicchunks.core.world.cube.Cube;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
@@ -85,12 +83,12 @@ public class QuickSaveQuickLoadEventHandler {
 
 	@SubscribeEvent
 	public void onBeforeBlockPlaced(RightClickBlock event) {
-		this.updateEBSData(event.getWorld(), event.getPos());
+		this.updateEBSData(event.getWorld(), event.getPos().offset(event.getFace()));
 	}
 
 	@SubscribeEvent
 	public void onCubeWatchEvent(CubeWatchEvent event) {
-		this.updateEntityData(event.getWorld(), event.getCube(), event.getCubePos());
+		this.updateEntityData(event.getWorld(), (Cube) event.getCube(), event.getCubePos());
 	}
 
 	private void updateEntityData(ICubicWorld cworld, @Nullable Cube cube, CubePos cpos) {
@@ -121,7 +119,7 @@ public class QuickSaveQuickLoadEventHandler {
 		WorldSavedDataCubesAndEntities data = this.getOrCreateData(world);
 		if (data.ebsData.containsKey(cpos))
 			return;
-		Cube lc = cworld.getCubeCache().getCube(cpos);
+		Cube lc = (Cube) cworld.getCubeCache().getCube(cpos);
 		EBSDataEntry dataEntry = new EBSDataEntry(new byte[4096], new NibbleArray());
 		if (!lc.isEmpty())
 			lc.getStorage().getData().getDataForNBT(dataEntry.bsdata, dataEntry.bsa);

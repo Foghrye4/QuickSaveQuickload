@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
-import cubicchunks.util.CubePos;
+import io.github.opencubicchunks.cubicchunks.api.util.CubePos;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
@@ -43,6 +43,10 @@ public class WorldSavedDataCubesAndEntities extends WorldSavedData {
 			int[] posa = tag.getIntArray("pos");
 			CubePos pos = new CubePos(posa[0], posa[1], posa[2]);
 			cubeEntityData.put(pos, new CubeSaveDataEntry(tag));
+		}
+		for (int i = 0; i < playersTags.tagCount(); i++) {
+			NBTTagCompound tag = playersTags.getCompoundTagAt(i);
+			playersData.put(tag.getUniqueId("UUID"), tag);
 		}
 	}
 

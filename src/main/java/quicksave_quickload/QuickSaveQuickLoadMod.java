@@ -18,7 +18,7 @@ import quicksave_quickload.event.QuickSaveQuickLoadEventHandler;
 public class QuickSaveQuickLoadMod {
 	public static final String MODID = "quicksave_quickload";
 	public static final String NAME = "Quicksave-quickload";
-	public static final String VERSION = "1.1.0";
+	public static final String VERSION = "1.2.0";
 
 	public static Logger log;
 	public static QuickSaveQuickLoadEventHandler eventHandler = new QuickSaveQuickLoadEventHandler();

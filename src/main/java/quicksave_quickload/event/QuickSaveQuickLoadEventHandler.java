@@ -1,13 +1,18 @@
 package quicksave_quickload.event;
 
+import java.nio.ByteBuffer;
+
 import javax.annotation.Nullable;
 
 import io.github.opencubicchunks.cubicchunks.api.util.CubePos;
 import io.github.opencubicchunks.cubicchunks.api.world.CubeWatchEvent;
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorld;
 import io.github.opencubicchunks.cubicchunks.core.world.cube.Cube;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
@@ -120,9 +125,17 @@ public class QuickSaveQuickLoadEventHandler {
 		if (data.ebsData.containsKey(cpos))
 			return;
 		Cube lc = (Cube) cworld.getCubeCache().getCube(cpos);
-		EBSDataEntry dataEntry = new EBSDataEntry(new byte[4096], new NibbleArray());
-		if (!lc.isEmpty())
-			lc.getStorage().getData().getDataForNBT(dataEntry.bsdata, dataEntry.bsa);
+		EBSDataEntry dataEntry = new EBSDataEntry();
+		
+		if (!lc.isEmpty()) {
+			int size = lc.getStorage().getData().getSerializedSize();
+			byte[] bytes = new byte[size];
+			ByteBuf bb = Unpooled.wrappedBuffer(bytes);
+			bb.writerIndex(0);
+			PacketBuffer buf = new PacketBuffer(bb);
+			lc.getStorage().getData().write(buf);
+			dataEntry.setData(bytes);
+		}
 		data.ebsData.put(cpos, dataEntry);
 		data.markDirty();
 	}

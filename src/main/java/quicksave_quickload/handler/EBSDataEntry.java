@@ -1,13 +1,12 @@
 package quicksave_quickload.handler;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.world.chunk.NibbleArray;
 
 public class EBSDataEntry {
-	public final byte[] bsdata;
-	public final NibbleArray bsa;
+	public byte[] bsdata;
 
-	public EBSDataEntry(byte[] bsdataIn, NibbleArray bsaIn) {
-		bsdata = bsdataIn;
-		bsa = bsaIn;
+	public void setData(byte[] bytesIn) {
+		bsdata = bytesIn;
 	}
 }

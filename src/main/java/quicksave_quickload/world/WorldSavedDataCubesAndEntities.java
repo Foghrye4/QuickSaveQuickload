@@ -34,9 +34,12 @@ public class WorldSavedDataCubesAndEntities extends WorldSavedData {
 			NBTTagCompound tag = ebsDataTags.getCompoundTagAt(i);
 			int[] posa = tag.getIntArray("pos");
 			CubePos pos = new CubePos(posa[0], posa[1], posa[2]);
-			byte[] bsdata = tag.getByteArray("bsdata");
-			NibbleArray na = new NibbleArray(tag.getByteArray("nadata"));
-			ebsData.put(pos, new EBSDataEntry(bsdata, na));
+			EBSDataEntry entry = new EBSDataEntry();
+			if (tag.hasKey("bsdata")) {
+				byte[] bsdata = tag.getByteArray("bsdata");
+				entry.setData(bsdata);
+			}
+			ebsData.put(pos, entry);
 		}
 		for (int i = 0; i < cubeEntityDataTags.tagCount(); i++) {
 			NBTTagCompound tag = cubeEntityDataTags.getCompoundTagAt(i);
@@ -59,8 +62,8 @@ public class WorldSavedDataCubesAndEntities extends WorldSavedData {
 			NBTTagCompound tag = new NBTTagCompound();
 			CubePos pos = entry.getKey();
 			tag.setIntArray("pos", new int[]{pos.getX(), pos.getY(), pos.getZ()});
-			tag.setByteArray("bsdata", entry.getValue().bsdata);
-			tag.setByteArray("nadata", entry.getValue().bsa.getData());
+			if (entry.getValue().bsdata != null)
+				tag.setByteArray("bsdata", entry.getValue().bsdata);
 			ebsDataTags.appendTag(tag);
 		}
 		for (Entry<CubePos, CubeSaveDataEntry> entry : cubeEntityData.entrySet()) {

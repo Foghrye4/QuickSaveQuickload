@@ -17,6 +17,8 @@ import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorld;
 import io.github.opencubicchunks.cubicchunks.core.network.PacketCubes;
 import io.github.opencubicchunks.cubicchunks.core.network.PacketDispatcher;
 import io.github.opencubicchunks.cubicchunks.core.world.cube.Cube;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -24,6 +26,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -31,12 +34,18 @@ import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.GameType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.chunk.NibbleArray;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import quicksave_quickload.QuickSaveQuickLoadMod;
 import quicksave_quickload.util.DimensionChanger;
 import quicksave_quickload.world.WorldSavedDataCubesAndEntities;
 
 public class SaveLoadHandler {
+	
+	
+	private final static byte[] emptyData = new byte[4096];
+	private final static NibbleArray emptyArray = new NibbleArray();
+	
 	public static void saveAll() {
 		for (WorldServer world : QuickSaveQuickLoadMod.proxy.getServer().worlds) {
 			save(world);
@@ -96,10 +105,18 @@ public class SaveLoadHandler {
 			CubePos cpos = entry.getKey();
 			Cube cube = (Cube) cache.getCube(cpos);
 			EBSDataEntry dataEntry = data.ebsData.get(cpos);
-			if (cube.getStorage() == null)
+			if (cube.getStorage() == null && dataEntry.bsdata != null)
 				cube.setStorage(new ExtendedBlockStorage(Coords.cubeToMinBlock(cpos.getY()),
 						world.provider.hasSkyLight()));
-			cube.getStorage().getData().setDataFromNBT(dataEntry.bsdata, dataEntry.bsa, null);
+			if(dataEntry.bsdata==null && cube.getStorage() != null) {
+				cube.getStorage().getData().setDataFromNBT(emptyData, emptyArray, null);
+			}
+			else if(dataEntry.bsdata!=null) {
+				ByteBuf bb = Unpooled.wrappedBuffer(dataEntry.bsdata);
+				bb.readerIndex(0);
+				PacketBuffer buf = new PacketBuffer(bb);
+				cube.getStorage().getData().read(buf);
+			}
 			cube.getStorage().recalculateRefCounts();
 			cube.markDirty();
 			cubesToUpdate.add(cube);
